@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) HandleGreeting(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Hello")
+	fmt.Fprintln(w, "Hello Forseer")
 }
 
 func (s *Server) HandleGetUsers(w http.ResponseWriter, r *http.Request) {
@@ -67,3 +67,6 @@ func (s *Server) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+
+func (s *Server) handle
