@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/ecetinerdem/forseer/api"
-	"github.com/ecetinerdem/forseer/db"
+	"github.com/ecetinerdem/forseer/database"
 	"github.com/joho/godotenv"
 )
 
@@ -16,15 +16,17 @@ func main() {
 		log.Println("No .env file found")
 	}
 
-	database, err := db.NewDB()
+	db, err := database.NewDB()
 
 	if err != nil {
 		log.Fatal("Database connection error: ", err)
 	}
 
-	defer database.Close()
+	defer db.Close()
 
-	server := api.NewServer(database)
+	database.RunMigrations(db)
+
+	server := api.NewServer(db)
 	PORT := os.Getenv("PORT")
 	log.Println("Server starting on the designated port")
 	log.Fatal(http.ListenAndServe(":"+PORT, server.Router))
