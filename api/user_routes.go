@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/ecetinerdem/forseer/types"
+	"github.com/go-chi/chi/v5"
 )
 
 func (s *Server) HandleGreeting(w http.ResponseWriter, r *http.Request) {
@@ -69,21 +70,21 @@ func (s *Server) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
-	var user types.User
 
 	ctx := r.Context()
 
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		http.Error(w, "Invalid JSON request", http.StatusInternalServerError)
+	userId := chi.URLParam(r, "id")
+
+	if userId == "" {
+		http.Error(w, "User Id is required", http.StatusBadRequest)
 		return
 	}
 
-	defer r.Body.Close()
-
-	foundUser, err := s.db.GetUserById(ctx, user.ID)
+	foundUser, err := s.db.GetUserById(ctx, userId)
 
 	if err != nil {
 		http.Error(w, "User with given id does not exist", http.StatusNotFound)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -91,6 +92,7 @@ func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
 
 	if err := json.NewEncoder(w).Encode(&foundUser); err != nil {
 		http.Error(w, "Cannot encode found user", http.StatusInternalServerError)
+		return
 	}
 
 }

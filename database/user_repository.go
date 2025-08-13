@@ -95,7 +95,7 @@ func (db *DB) GetUserById(ctx context.Context, id string) (*types.User, error) {
 	`
 	var user types.User
 
-	err := db.QueryRowContext(ctx, query).Scan(
+	err := db.QueryRowContext(ctx, query, id).Scan(
 		&user.ID,
 		&user.Name,
 		&user.Email,
@@ -107,7 +107,7 @@ func (db *DB) GetUserById(ctx context.Context, id string) (*types.User, error) {
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("cannot read from database")
+		return nil, fmt.Errorf("user not found: %w", err)
 	}
 
 	return &user, nil
