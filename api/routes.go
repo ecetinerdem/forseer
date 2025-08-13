@@ -12,14 +12,23 @@ func (s *Server) HandleGreeting(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Hello")
 }
 
-func (s *Server) HandleUsers(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleGetUsers(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
 	users, err := s.db.GetUsers(ctx)
 
-	if err = nil
+	if err != nil {
+		http.Error(w, "Could not get users", http.StatusInternalServerError)
+		return
+	}
 
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(&users); err != nil {
+		http.Error(w, "Could not encode users", http.StatusInternalServerError)
+	}
 
 }
 
