@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/ecetinerdem/forseer/database"
-	"github.com/ecetinerdem/forseer/routes"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -21,6 +20,7 @@ func NewServer(database *database.DB) *Server {
 }
 
 func (s *Server) setUpRoutes() {
-	s.Router.Get("/", routes.HandleGreeting)
-	s.Router.Get("/users", routes.HandleUsers)
+	s.Router.Get("/", s.HandleGreeting)
+	s.Router.Get("/users", s.HandleUsers)
+	s.Router.Post("/users", s.HandleCreateUser)
 }

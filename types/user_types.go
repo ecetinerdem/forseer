@@ -1,6 +1,10 @@
 package types
 
-import "time"
+import (
+	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
 
 type User struct {
 	ID             string           `json:"id"`
@@ -16,7 +20,7 @@ type User struct {
 	// have to create types according to fetched data
 }
 
-type CreateUser struct {
+type RegisterUser struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -29,4 +33,27 @@ type LoginUser struct {
 type LoginUserResponse struct {
 	User  *User  `json:"user"`
 	Token string `json:"token"`
+}
+
+func NewUser(params RegisterUser) (*User, error) {
+	hashedPswrd, err := bcrypt.GenerateFromPassword([]byte(params.Password), 12)
+	if err != nil {
+		return nil, err
+	}
+
+	return &User{
+		Name:           "", // Can update name later
+		Email:          params.Email,
+		PasswordHashed: string(hashedPswrd),
+		Subscription:   "nosubs",
+		RegisterDate:   time.Now().Local(),
+		LastLogin:      time.Now().Local(),
+		IsAdmin:        false,
+		IsPaid:         false,
+	}, nil
+
+}
+
+func ValidatePassword(hashPassword string, password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password)) == nil
 }
