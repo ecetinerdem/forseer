@@ -90,8 +90,27 @@ func (db *DB) GetUsers(ctx context.Context) ([]*types.User, error) {
 }
 
 func (db *DB) GetUserById(ctx context.Context, id string) (*types.User, error) {
-	// TODO: Implement
-	return nil, nil
+	query := `
+		SELECT id, name, email, subscription, register_date, last_login, is_admin, is_paid FROM users WHERE id=$1
+	`
+	var user types.User
+
+	err := db.QueryRowContext(ctx, query).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.Subscription,
+		&user.RegisterDate,
+		&user.LastLogin,
+		&user.IsAdmin,
+		&user.IsPaid,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot read from database")
+	}
+
+	return &user, nil
 }
 
 func (db *DB) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {

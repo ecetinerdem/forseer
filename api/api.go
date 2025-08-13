@@ -22,5 +22,7 @@ func NewServer(database *database.DB) *Server {
 func (s *Server) setUpRoutes() {
 	s.Router.Get("/", s.HandleGreeting)
 	s.Router.Get("/users", s.HandleGetUsers)
+	s.Router.Get("/users/{id}", s.handleGetUserById)
 	s.Router.Post("/users", s.HandleCreateUser)
+
 }
