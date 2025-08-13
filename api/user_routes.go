@@ -68,5 +68,29 @@ func (s *Server) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
+	var user types.User
 
-func (s *Server) handle
+	ctx := r.Context()
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		http.Error(w, "Invalid JSON request", http.StatusInternalServerError)
+		return
+	}
+
+	defer r.Body.Close()
+
+	foundUser, err := s.db.GetUserById(ctx, user.ID)
+
+	if err != nil {
+		http.Error(w, "User with given id does not exist", http.StatusNotFound)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusFound)
+
+	if err := json.NewEncoder(w).Encode(&foundUser); err != nil {
+		http.Error(w, "Cannot encode found user", http.StatusInternalServerError)
+	}
+
+}
