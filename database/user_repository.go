@@ -10,6 +10,7 @@ import (
 
 type UserRepo interface {
 	CreateUser(context.Context, *types.User) (*types.User, error)
+	GetUsers(context.Context) ([]*types.User, error)
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUserByEmail(context.Context, string) (*types.User, error)
 	UpdateUser(context.Context, *types.User) (*types.User, error)
@@ -47,6 +48,45 @@ func (db *DB) CreateUser(ctx context.Context, user *types.User) (*types.User, er
 	user.IsPaid = userIsPaid
 
 	return user, nil
+}
+
+func (db *DB) GetUsers(ctx context.Context) ([]*types.User, error) {
+
+	query := `
+		SELECT id, name, email, subscription, register_date, last_login, is_admin, is_paid FROM users
+	`
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("database error %w", err)
+	}
+	defer rows.Close()
+
+	var users []*types.User
+
+	for rows.Next() {
+		if err = rows.Err(); err != nil {
+			return nil, fmt.Errorf("row iteration error: %w", err)
+		}
+
+		var u types.User
+		err := rows.Scan(
+			&u.ID,
+			&u.Name,
+			&u.Email,
+			&u.Subscription,
+			&u.RegisterDate,
+			&u.LastLogin,
+			&u.IsAdmin,
+			&u.IsPaid,
+		)
+
+		if err != nil {
+			return nil, fmt.Errorf("could not read row %w", err)
+		}
+		users = append(users, &u)
+	}
+
+	return users, nil
 }
 
 func (db *DB) GetUserById(ctx context.Context, id string) (*types.User, error) {

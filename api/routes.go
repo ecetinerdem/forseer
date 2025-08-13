@@ -13,7 +13,14 @@ func (s *Server) HandleGreeting(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleUsers(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Handle users")
+
+	ctx := r.Context()
+
+	users, err := s.db.GetUsers(ctx)
+
+	if err = nil
+
+
 }
 
 func (s *Server) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
