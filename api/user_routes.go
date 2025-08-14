@@ -112,10 +112,16 @@ func (s *Server) handleUpdateUSer(w http.ResponseWriter, r *http.Request) {
 
 	updatedUser, err := s.db.UpdateUser(ctx, userId, &user)
 
+	if err != nil {
+		http.Error(w, "Failed to update user from db", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	err := json.NewEncoder(w).Encode(updatedUser); err != nil {
-		http.Error(w, "Failed to update user", http.StatusInternalServerError)
+	if err = json.NewEncoder(w).Encode(updatedUser); err != nil {
+		http.Error(w, "Failed to update user encoding", http.StatusInternalServerError)
+		return
 	}
 }

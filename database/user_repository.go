@@ -134,6 +134,7 @@ func (db *DB) UpdateUser(ctx context.Context, userId string, user *types.User) (
 		user.Name,
 		user.Email,
 		user.Subscription,
+		userId,
 	).Scan(
 		&updatedUser.ID,
 		&updatedUser.Name,
