@@ -97,7 +97,40 @@ func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) handleUpdateUSer(w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
+
+	var email string
+	ctx := r.Context()
+	userId := chi.URLParam(r, "id")
+
+	if userId == "" {
+		http.Error(w, "Only users can search for other users", http.StatusBadRequest)
+		return
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&email); err != nil {
+		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	foundUser, err := s.db.GetUserByEmail(ctx, email)
+
+	if err != nil {
+		http.Error(w, "Failed to found user in db", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusFound)
+
+	if err := json.NewEncoder(w).Encode(&foundUser); err != nil {
+		http.Error(w, "Failed to encode user", http.StatusInternalServerError)
+		return
+	}
+}
+
+func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	var user types.User
 
 	ctx := r.Context()

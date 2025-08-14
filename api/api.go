@@ -23,7 +23,8 @@ func (s *Server) setUpRoutes() {
 	s.Router.Get("/", s.HandleGreeting)
 	s.Router.Get("/users", s.HandleGetUsers)
 	s.Router.Get("/users/{id}", s.handleGetUserById)
-	s.Router.Put("/users/{id}", s.handleUpdateUSer)
+	s.Router.Get("/users/{id}", s.handleGetUserByEmail)
+	s.Router.Put("/users/{id}", s.handleUpdateUser)
 	s.Router.Post("/users", s.HandleCreateUser)
 
 }
