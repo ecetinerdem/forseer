@@ -164,3 +164,18 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (s *Server) handleDeleteUserById(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	userId := chi.URLParam(r, "id")
+
+	err := s.db.DeleteUser(ctx, userId)
+
+	if err != nil {
+		http.Error(w, "Delete request cannot be fulfilled", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+}
