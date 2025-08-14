@@ -13,7 +13,7 @@ type UserRepo interface {
 	GetUsers(context.Context) ([]*types.User, error)
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUserByEmail(context.Context, string) (*types.User, error)
-	UpdateUser(context.Context, *types.User) (*types.User, error)
+	UpdateUser(context.Context, string, *types.User) (*types.User, error)
 	DeleteUser(context.Context, string) error // Fixed return type
 }
 
@@ -118,9 +118,37 @@ func (db *DB) GetUserByEmail(ctx context.Context, email string) (*types.User, er
 	return nil, nil
 }
 
-func (db *DB) UpdateUser(ctx context.Context, user *types.User) (*types.User, error) {
-	// TODO: Implement
-	return nil, nil
+func (db *DB) UpdateUser(ctx context.Context, userId string, user *types.User) (*types.User, error) {
+	query := `
+		UPDATE users
+		SET name = $1, email = $2, subscription = $3
+		WHERE id = $4
+		RETURNING id, name, email, subscription, register_date, last_login, is_admin, is_paid
+	`
+
+	var updatedUser types.User
+
+	err := db.QueryRowContext(
+		ctx,
+		query,
+		user.Name,
+		user.Email,
+		user.Subscription,
+	).Scan(
+		&updatedUser.ID,
+		&updatedUser.Name,
+		&updatedUser.Email,
+		&updatedUser.Subscription,
+		&updatedUser.RegisterDate,
+		&updatedUser.LastLogin,
+		&updatedUser.IsAdmin,
+		&updatedUser.IsPaid,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user %w", err)
+	}
+	return &updatedUser, nil
 }
 
 func (db *DB) DeleteUser(ctx context.Context, id string) error {

@@ -96,3 +96,19 @@ func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func (s *Server) handleUpdateUSer(w http.ResponseWriter, r *http.Request) {
+	var user types.User
+
+	ctx := r.Context()
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	userId := chi.URLParam(r, "id")
+
+	updatedUser, err := s.db.UpdateUser(ctx, userId, &user)
+}
