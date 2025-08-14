@@ -111,4 +111,11 @@ func (s *Server) handleUpdateUSer(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "id")
 
 	updatedUser, err := s.db.UpdateUser(ctx, userId, &user)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	err := json.NewEncoder(w).Encode(updatedUser); err != nil {
+		http.Error(w, "Failed to update user", http.StatusInternalServerError)
+	}
 }
