@@ -26,5 +26,5 @@ func (s *Server) setUpRoutes() {
 	s.Router.Get("/users/{id}/search", s.handleGetUserByEmail)
 	s.Router.Put("/users/{id}", s.handleUpdateUser)
 	s.Router.Post("/users", s.HandleCreateUser)
-
+	s.Router.Delete("/users/{id}", s.handleDeleteUserById)
 }
