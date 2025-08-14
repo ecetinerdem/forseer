@@ -99,7 +99,6 @@ func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 
-	var email string
 	ctx := r.Context()
 	userId := chi.URLParam(r, "id")
 
@@ -108,11 +107,18 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&email); err != nil {
-		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+	email := r.URL.Query().Get("email") //?email=
+
+	if email == "" {
+		http.Error(w, "Only users can search for other users", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
+
+	//if err := json.NewDecoder(r.Body).Decode(&email); err != nil {
+	//	http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+	//	return
+	//}
+	//defer r.Body.Close()
 
 	foundUser, err := s.db.GetUserByEmail(ctx, email)
 
@@ -122,7 +128,7 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusFound)
+	w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(&foundUser); err != nil {
 		http.Error(w, "Failed to encode user", http.StatusInternalServerError)
