@@ -1,8 +1,10 @@
 package types
 
 import (
+	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -56,4 +58,24 @@ func NewUser(params RegisterUser) (*User, error) {
 
 func ValidatePassword(hashPassword string, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password)) == nil
+}
+
+func CreateToken(user User) string {
+	now := time.Now()
+	validUntil := now.Add(time.Hour * 4).Unix()
+
+	claims := jwt.MapClaims{
+		"id":            user.ID,
+		"name":          user.Name,
+		"email":         user.Email,
+		"subscription":  user.Subscription,
+		"register_date": user.RegisterDate,
+		"last_login":    user.LastLogin,
+		"is_admin":      user.IsAdmin,
+		"is_paid":       user.IsPaid,
+		"expires":       validUntil,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims, nil)
+	secret := os.Getenv("JWT_SECRET")
 }

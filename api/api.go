@@ -19,12 +19,18 @@ func NewServer(database *database.DB) *Server {
 	return s
 }
 
-func (s *Server) setUpRoutes() {
+func (s *Server) setUpRoutes() *chi.Mux {
 	s.Router.Get("/", s.HandleGreeting)
-	s.Router.Get("/users", s.HandleGetUsers)
-	s.Router.Get("/users/{id}", s.handleGetUserById)
-	s.Router.Get("/users/{id}/search", s.handleGetUserByEmail)
-	s.Router.Put("/users/{id}", s.handleUpdateUser)
-	s.Router.Post("/users", s.HandleCreateUser)
-	s.Router.Delete("/users/{id}", s.handleDeleteUserById)
+
+	s.Router.Route("api/v1", func(r chi.Router) {
+		r.Use(middleware.UserAuthentication)
+		r.Get("/users", s.HandleGetUsers)
+		r.Get("/users/{id}", s.handleGetUserById)
+		r.Get("/users/{id}/search", s.handleGetUserByEmail)
+		r.Put("/users/{id}", s.handleUpdateUser)
+		r.Post("/users", s.HandleCreateUser)
+		r.Delete("/users/{id}", s.handleDeleteUserById)
+	})
+
+	return s.Router
 }
