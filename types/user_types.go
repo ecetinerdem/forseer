@@ -74,10 +74,10 @@ func CreateToken(user User) string {
 		"last_login":    user.LastLogin,
 		"is_admin":      user.IsAdmin,
 		"is_paid":       user.IsPaid,
-		"expires":       validUntil,
+		"exp":           validUntil,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims, nil)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	secret := os.Getenv("JWT_SECRET")
 
 	tokenStr, err := token.SignedString([]byte(secret))
