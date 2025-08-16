@@ -61,7 +61,7 @@ func ValidatePassword(hashPassword string, password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(password)) == nil
 }
 
-func CreateToken(user User) string {
+func CreateToken(user User) (string, error) {
 	now := time.Now()
 	validUntil := now.Add(time.Hour * 4).Unix()
 
@@ -83,8 +83,9 @@ func CreateToken(user User) string {
 	tokenStr, err := token.SignedString([]byte(secret))
 
 	if err != nil {
-		fmt.Println("Failed to sign token: %w", err)
+
+		return "", fmt.Errorf("failed to sign token %w", err)
 	}
 
-	return tokenStr
+	return tokenStr, nil
 }
