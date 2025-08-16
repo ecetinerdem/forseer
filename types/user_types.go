@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -78,4 +79,12 @@ func CreateToken(user User) string {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims, nil)
 	secret := os.Getenv("JWT_SECRET")
+
+	tokenStr, err := token.SignedString([]byte(secret))
+
+	if err != nil {
+		fmt.Println("Failed to sign token: %w", err)
+	}
+
+	return tokenStr
 }
