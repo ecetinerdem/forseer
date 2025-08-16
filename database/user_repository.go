@@ -172,6 +172,21 @@ func (db *DB) UpdateUser(ctx context.Context, userId string, user *types.User) (
 }
 
 func (db *DB) DeleteUser(ctx context.Context, id string) error {
-	// TODO: Implement
+	query := "DELETE FROM users WHERE id = $1"
+
+	result, err := db.ExecContext(ctx, query, id)
+
+	if err != nil {
+		return fmt.Errorf("failed to execute delete user %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("user with given id does not exist %w", err)
+	}
 	return nil
 }
