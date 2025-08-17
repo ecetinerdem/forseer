@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/ecetinerdem/forseer/database"
+	"github.com/ecetinerdem/forseer/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
