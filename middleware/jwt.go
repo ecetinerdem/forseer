@@ -2,11 +2,14 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/ecetinerdem/forseer/types"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type key string
@@ -76,6 +79,27 @@ func UserAuthentication(next http.Handler) http.Handler {
 	})
 }
 
+func ParseToken(tokenString string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenString, func(tok *jwt.Token) (interface{}, error) {
+		if _, ok := tok.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", tok.Header["alg"])
+		}
+		secret := os.Getenv("JWT_SECRET")
+		return []byte(secret), nil
+	})
 
+	if err != nil {
+		return nil, fmt.Errorf("unauthorized: %w", err)
+	}
 
-func ParseToken
+	if !token.Valid {
+		return nil, fmt.Errorf("unauthorized: token is invalid")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("unauthorized: invalid claims format")
+	}
+
+	return claims, nil
+}
