@@ -52,7 +52,7 @@ func (s *Server) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newUSer, err := s.db.CreateUser(ctx, user)
+	newUserResponse, err := s.db.CreateUser(ctx, user)
 
 	if err != nil {
 		http.Error(w, "Failed to create user", http.StatusInternalServerError)
@@ -62,14 +62,41 @@ func (s *Server) HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(newUSer); err != nil {
+	if err := json.NewEncoder(w).Encode(newUserResponse); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
 
 }
 
-func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleLoginUser(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+	var loginUser types.LoginUser
+
+	if err := json.NewDecoder(r.Body).Decode(&loginUser); err != nil {
+		http.Error(w, "Invalid JSON request", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+	loginUserResponse, err := s.db.ValidateUser(ctx, loginUser)
+
+	if err != nil {
+		http.Error(w, "Unauthorized access", http.StatusUnauthorized)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(&loginUserResponse); err != nil {
+		http.Error(w, "Could not encode response", http.StatusInternalServerError)
+		return
+	}
+
+}
+
+func (s *Server) HandleGetUserById(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
@@ -97,7 +124,7 @@ func (s *Server) handleGetUserById(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 	userId := chi.URLParam(r, "id")
@@ -136,7 +163,7 @@ func (s *Server) handleGetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	var user types.User
 
 	ctx := r.Context()
@@ -165,7 +192,7 @@ func (s *Server) handleUpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) handleDeleteUserById(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleDeleteUserById(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	userId := chi.URLParam(r, "id")

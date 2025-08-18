@@ -9,7 +9,8 @@ import (
 )
 
 type UserRepo interface {
-	CreateUser(context.Context, *types.User) (*types.User, error)
+	CreateUser(context.Context, *types.User) (*types.LoginUserResponse, error)
+	ValidateUser(context.Context, *types.LoginUser) (*types.LoginUserResponse, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUserByEmail(context.Context, string) (*types.User, error)
@@ -17,7 +18,7 @@ type UserRepo interface {
 	DeleteUser(context.Context, string) error // Fixed return type
 }
 
-func (db *DB) CreateUser(ctx context.Context, user *types.User) (*types.User, error) {
+func (db *DB) CreateUser(ctx context.Context, user *types.User) (*types.LoginUserResponse, error) {
 	query := `
 		INSERT INTO users(name, email, password_hashed)
 		VALUES($1, $2, $3)
@@ -47,9 +48,44 @@ func (db *DB) CreateUser(ctx context.Context, user *types.User) (*types.User, er
 	user.IsAdmin = userIsAdmin
 	user.IsPaid = userIsPaid
 
-	return user, nil
+	token, err := types.CreateToken(*user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token: %w", err)
+	}
+
+	var loginUserResponse types.LoginUserResponse
+
+	loginUserResponse.User = user
+	loginUserResponse.Token = token
+
+	return &loginUserResponse, nil
 }
 
+func (db *DB) ValidateUser(ctx context.Context, loginUser types.LoginUser) (*types.LoginUserResponse, error) {
+	userInDB, err := db.GetUserByEmail(ctx, loginUser.Email)
+
+	if err != nil {
+		return nil, fmt.Errorf("user with given id does not exist")
+	}
+
+	ok := types.ValidatePassword(userInDB.PasswordHashed, loginUser.Password)
+
+	if !ok {
+		return nil, fmt.Errorf("password does not match")
+	}
+
+	token, err := types.CreateToken(*userInDB)
+	if err != nil {
+		return nil, fmt.Errorf("could not create token")
+	}
+
+	var loginUserResponse types.LoginUserResponse
+	loginUserResponse.User = userInDB
+	loginUserResponse.Token = token
+
+	return &loginUserResponse, nil
+
+}
 func (db *DB) GetUsers(ctx context.Context) ([]*types.User, error) {
 
 	query := `
