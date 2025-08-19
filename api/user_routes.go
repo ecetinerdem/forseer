@@ -115,7 +115,7 @@ func (s *Server) HandleGetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusFound)
+	w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(&foundUser); err != nil {
 		http.Error(w, "Cannot encode found user", http.StatusInternalServerError)
@@ -201,6 +201,7 @@ func (s *Server) HandleDeleteUserById(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		http.Error(w, "Delete request cannot be fulfilled", http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")

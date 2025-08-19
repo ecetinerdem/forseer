@@ -25,13 +25,18 @@ func (s *Server) setUpRoutes() *chi.Mux {
 	s.Router.Post("/register", s.HandleCreateUser)
 	s.Router.Post("/login", s.HandleLoginUser)
 
-	s.Router.Route("api/v1", func(r chi.Router) {
-		r.Use(middleware.UserAuthentication)
-		r.Get("/users", s.HandleGetUsers)
-		r.Get("/users/{id}", s.HandleGetUserById)
-		r.Get("/users/{id}/search", s.HandleGetUserByEmail)
-		r.Put("/users/{id}", s.HandleUpdateUser)
-		r.Delete("/users/{id}", s.HandleDeleteUserById)
+	s.Router.Route("/api/v1", func(r chi.Router) {
+
+		r.Route("/users", func(userRouter chi.Router) {
+			userRouter.Use(middleware.UserAuthentication)
+			userRouter.Get("/users", s.HandleGetUsers)
+			userRouter.Get("/users/{id}", s.HandleGetUserById)
+			userRouter.Put("/users/{id}", s.HandleUpdateUser)
+			userRouter.Delete("/users/{id}", s.HandleDeleteUserById)
+		})
+
+		r.Get("/search/users", s.HandleGetUserByEmail)
+
 	})
 
 	return s.Router

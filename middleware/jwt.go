@@ -44,7 +44,7 @@ func UserAuthentication(next http.Handler) http.Handler {
 
 		headerParts := strings.Split(authHeader, " ")
 
-		if len(headerParts) != 2 || headerParts[0] == "Bearer" {
+		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
 			http.Error(w, "Unauthorized: invalid authorization header", http.StatusUnauthorized)
 			return
 		}
@@ -58,9 +58,14 @@ func UserAuthentication(next http.Handler) http.Handler {
 			return
 		}
 
-		expires := int64(claims["expires"].(float64))
+		expires, ok := claims["exp"].(float64)
 
-		if time.Now().Unix() > expires {
+		if !ok {
+			http.Error(w, "Unauthorized: invalid token claims", http.StatusUnauthorized)
+			return
+		}
+
+		if time.Now().Unix() > int64(expires) {
 			http.Error(w, "Unauthorized: token expired", http.StatusUnauthorized)
 			return
 		}

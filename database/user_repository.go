@@ -222,7 +222,7 @@ func (db *DB) DeleteUser(ctx context.Context, id string) error {
 	}
 
 	if rowsAffected == 0 {
-		return fmt.Errorf("user with given id does not exist %w", err)
+		return fmt.Errorf("user with given id does not exist")
 	}
 	return nil
 }
