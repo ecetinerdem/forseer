@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 
-CREATE TABLE portfolios (
+CREATE TABLE IF NOT EXISTS portfolios (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id VARCHAR(36) REFERENCES users(id),
-    stocks JSON NOT NULL,
+    user_id UUID REFERENCES users(id),
+    stocks JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

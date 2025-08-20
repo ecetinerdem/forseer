@@ -29,13 +29,22 @@ func (s *Server) setUpRoutes() *chi.Mux {
 
 		r.Route("/users", func(userRouter chi.Router) {
 			userRouter.Use(middleware.UserAuthentication)
-			userRouter.Get("/users", s.HandleGetUsers)
-			userRouter.Get("/users/{id}", s.HandleGetUserById)
-			userRouter.Put("/users/{id}", s.HandleUpdateUser)
-			userRouter.Delete("/users/{id}", s.HandleDeleteUserById)
+			userRouter.Get("/", s.HandleGetUsers)
+			userRouter.Get("/{id}", s.HandleGetUserById)
+			userRouter.Put("/{id}", s.HandleUpdateUser)
+			userRouter.Delete("/{id}", s.HandleDeleteUserById)
 		})
 
 		r.Get("/search/users", s.HandleGetUserByEmail)
+
+		r.Route("/portfolio", func(portfolioRouter chi.Router) {
+			portfolioRouter.Use(middleware.UserAuthentication)
+			portfolioRouter.Get("/", s.HandleGetPortfolio)
+			portfolioRouter.Get("/{id}", s.HandleGetStockById)
+			portfolioRouter.Delete("/{id}", s.HandleDeleteStockById)
+		})
+
+		r.Get("/search/stocks", s.HandleGetStockBySymbol)
 
 	})
 
