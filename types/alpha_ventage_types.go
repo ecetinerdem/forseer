@@ -19,13 +19,3 @@ type MonthlyData struct {
 	Close  string `json:"4. close"`
 	Volume string `json:"5. volume"`
 }
-
-type Stock struct {
-	Symbol string `json:"symbol"`
-	Month  string `json:"month"`
-	Open   string `json:"open"`
-	High   string `json:"high"`
-	Low    string `json:"low"`
-	Close  string `json:"close"`
-	Volume string `json:"volume"`
-}

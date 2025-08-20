@@ -19,8 +19,6 @@ type User struct {
 	LastLogin      time.Time        `json:"last_login"`
 	IsAdmin        bool             `json:"is_admin"`
 	IsPaid         bool             `json:"is_paid"`
-	// TODO: Add Portfolio slice and radar slice which we will take from a stocks API
-	// have to create types according to fetched data
 }
 
 type RegisterUser struct {
