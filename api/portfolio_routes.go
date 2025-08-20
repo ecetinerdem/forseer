@@ -23,11 +23,15 @@ func (s *Server) HandleGetPortfolio(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) HandleGetStockById(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleGetStockByID(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) HandleDeleteStockById(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *Server) HandleDeleteStockByID(w http.ResponseWriter, r *http.Request) {
 
 }
 
