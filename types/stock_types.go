@@ -1,13 +1,15 @@
 package types
 
 type Stock struct {
-	Symbol string `json:"symbol"`
-	Month  string `json:"month"`
-	Open   string `json:"open"`
-	High   string `json:"high"`
-	Low    string `json:"low"`
-	Close  string `json:"close"`
-	Volume string `json:"volume"`
+	ID          string `json:"id"`
+	PortfolioID string `json:"portfolio_id"`
+	Symbol      string `json:"symbol"`
+	Month       string `json:"month"`
+	Open        string `json:"open"`
+	High        string `json:"high"`
+	Low         string `json:"low"`
+	Close       string `json:"close"`
+	Volume      string `json:"volume"`
 }
 
 type Portfolio struct {

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/ecetinerdem/forseer/middleware"
+	"github.com/go-chi/chi/v5"
 )
 
 func (s *Server) HandleGetPortfolio(w http.ResponseWriter, r *http.Request) {
@@ -42,6 +43,30 @@ func (s *Server) HandleGetPortfolio(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleGetStockByID(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	stockId := chi.URLParam(r, "id")
+
+	if stockId == "" {
+		http.Error(w, "Stock ID can not be empty", http.StatusBadRequest)
+		return
+	}
+
+	stock, err := s.db.GetStockByID(ctx, stockId)
+
+	if err != nil {
+		http.Error(w, "Stock with given id does not exist", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(&stock); err != nil {
+		http.Error(w, "Cold not encode stock", http.StatusInternalServerError)
+		return
+	}
 
 }
 

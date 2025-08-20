@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/ecetinerdem/forseer/types"
@@ -83,7 +82,6 @@ func (s *Server) HandleLoginUser(w http.ResponseWriter, r *http.Request) {
 	loginUserResponse, err := s.db.ValidateUser(ctx, loginUser)
 
 	if err != nil {
-		log.Println("Logging err : ", err)
 		http.Error(w, "Unauthorized access", http.StatusUnauthorized)
 		return
 	}

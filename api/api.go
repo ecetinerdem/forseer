@@ -1,8 +1,6 @@
 package api
 
 import (
-	"log"
-
 	"github.com/ecetinerdem/forseer/database"
 	"github.com/ecetinerdem/forseer/middleware"
 	"github.com/go-chi/chi/v5"
@@ -27,7 +25,6 @@ func (s *Server) setUpRoutes() *chi.Mux {
 	s.Router.Get("/", s.HandleGreeting)
 	s.Router.Post("/register", s.HandleCreateUser)
 	s.Router.Post("/login", s.HandleLoginUser)
-	log.Println("Login handler called")
 
 	s.Router.Route("/api/v1", func(r chi.Router) {
 

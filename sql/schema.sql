@@ -20,3 +20,16 @@ CREATE TABLE IF NOT EXISTS portfolios (
     stocks JSONB NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS stocks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    portfolio_id UUID REFERENCES portfolios(id),
+    symbol VARCHAR(10) NOT NULL,
+    month VARCHAR(10) NOT NULL,
+    open NUMERIC(10,2) NOT NULL,
+    high NUMERIC(10,2) NOT NULL,
+    low NUMERIC(10,2) NOT NULL,
+    close NUMERIC(10,2) NOT NULL,
+    volume BIGINT NOT NULL
+);
+
