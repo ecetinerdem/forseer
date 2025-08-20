@@ -151,7 +151,7 @@ func (db *DB) GetUserById(ctx context.Context, id string) (*types.User, error) {
 
 func (db *DB) GetUserByEmail(ctx context.Context, email string) (*types.User, error) {
 	query := `
-		SELECT id, name, email, subscription, register_date, last_login, is_admin, is_paid FROM users WHERE email=$1
+		SELECT id, name, email, password_hashed, subscription, register_date, last_login, is_admin, is_paid FROM users WHERE email=$1
 	`
 	var user types.User
 
@@ -159,6 +159,7 @@ func (db *DB) GetUserByEmail(ctx context.Context, email string) (*types.User, er
 		&user.ID,
 		&user.Name,
 		&user.Email,
+		&user.PasswordHashed,
 		&user.Subscription,
 		&user.RegisterDate,
 		&user.LastLogin,
