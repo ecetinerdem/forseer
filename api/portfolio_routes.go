@@ -3,12 +3,20 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/ecetinerdem/forseer/middleware"
 )
 
 func (s *Server) HandleGetPortfolio(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	portfolio, err := s.db.GetStocks(ctx)
+	user := middleware.User(ctx)
+	if user == nil {
+		http.Error(w, "Could not get user from context", http.StatusUnauthorized)
+		return
+	}
+
+	portfolio, err := s.db.GetStocks(ctx, user.ID)
 
 	if err != nil {
 		http.Error(w, "Could not get portfolio", http.StatusInternalServerError)

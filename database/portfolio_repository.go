@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/ecetinerdem/forseer/types"
 )
@@ -12,4 +14,50 @@ type PortfolioRepo interface {
 	GetStockBySymbol(context.Context, string) (*types.Stock, error)
 	AddStockToPortfolio(context.Context, *types.Stock) (*types.Stock, error)
 	DeleteStockByID(context.Context, string) error
+}
+
+func (db *DB) GetStocks(ctx context.Context, userID string) (*types.Portfolio, error) {
+	query := `
+		SELECT id, user_id, stocks FROM portfolios
+		WHERE user_id = $1
+		ORDER BY created_at DESC
+		LIMIT 1
+	`
+
+	var portfolio types.Portfolio
+	var stocksJSON []byte
+
+	err := db.QueryRowContext(ctx, query, userID).Scan(
+		&portfolio.ID,
+		&portfolio.UserID,
+		&stocksJSON,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to find portfolio %w", err)
+	}
+
+	err = json.Unmarshal(stocksJSON, &portfolio.Stocks)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal stocks %w", err)
+	}
+
+	return &portfolio, nil
+}
+
+func (db *DB) GetStockByID(ctx context.Context, stockID string) (*types.Portfolio, error) {
+	return nil, nil
+}
+
+func (db *DB) GetStockBySymbol(ctx context.Context, stockSymbol string) (*types.Portfolio, error) {
+	return nil, nil
+}
+
+func (db *DB) AddStockToPortfolio(ctx context.Context, stockSymbol string) (*types.Portfolio, error) {
+	return nil, nil
+}
+
+func (db *DB) DeleteStockByID(ctx context.Context, userID string) error {
+	return nil
 }
