@@ -94,9 +94,23 @@ func (db *DB) AddStockToPortfolio(ctx context.Context, stock types.Stock) (*type
 	var close string
 	var volume string
 
-	err := db.QueryRowContext(ctx, query, stock.,)
+	err := db.QueryRowContext(ctx, query, stock).Scan(&stockID, &portfolioID, &symbol, &month, &open, &high, &low, &close, &volume)
 
-	return nil, nil
+	if err != nil {
+		return nil, fmt.Errorf("could not save the stock %w", err)
+	}
+
+	return &types.Stock{
+		ID:          stockID,
+		PortfolioID: portfolioID,
+		Symbol:      symbol,
+		Month:       month,
+		Open:        open,
+		High:        high,
+		Low:         low,
+		Close:       close,
+		Volume:      volume,
+	}, nil
 }
 
 func (db *DB) DeleteStockByID(ctx context.Context, userID string) error {
