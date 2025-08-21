@@ -42,7 +42,7 @@ func (s *Server) setUpRoutes() *chi.Mux {
 			portfolioRouter.Use(middleware.UserAuthentication)
 			portfolioRouter.Get("/", s.HandleGetPortfolio)
 			portfolioRouter.Get("/{id}", s.HandleGetStockByID)
-			portfolioRouter.Post("/{id}", s.HandleAddStockToPortfolio)
+			portfolioRouter.Post("/{symbol}", s.HandleAddStockToPortfolio)
 			portfolioRouter.Delete("/{id}", s.HandleDeleteStockByID)
 		})
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/ecetinerdem/forseer/api/utils"
 	"github.com/ecetinerdem/forseer/middleware"
 	"github.com/go-chi/chi/v5"
 )
@@ -71,6 +72,16 @@ func (s *Server) HandleGetStockByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	stockSymbol := chi.URLParam(r, "symbol")
+
+	if stockSymbol == "" {
+		http.Error(w, "Stock symbol can not be empty", http.StatusBadRequest)
+		return
+	}
+
+	stock, err := utils.GetAlphaVentageStock(stockSymbol)
 
 }
 
