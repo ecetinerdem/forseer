@@ -15,7 +15,7 @@ func GetAlphaVentageStock(user *types.User, stockSymbol string) (*types.Stock, e
 	var returnStock types.Stock
 
 	apiKey := os.Getenv("ALPHAVENTAGE_API_KEY")
-	url := fmt.Sprintf("https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=%s&apikey=%w", stockSymbol, apiKey)
+	url := fmt.Sprintf("https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=%s&apikey=%s", stockSymbol, apiKey)
 
 	r, err := http.Get(url)
 
