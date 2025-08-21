@@ -74,6 +74,8 @@ func (s *Server) HandleGetStockByID(w http.ResponseWriter, r *http.Request) {
 func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	user := middleware.User(ctx)
+
 	stockSymbol := chi.URLParam(r, "symbol")
 
 	if stockSymbol == "" {
@@ -81,7 +83,12 @@ func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	stock, err := utils.GetAlphaVentageStock(stockSymbol)
+	stock, err := utils.GetAlphaVentageStock(&user, stockSymbol)
+
+	if err != nil {
+		http.Error(w, "Error while fetching stock", http.StatusInternalServerError)
+		return
+	}
 
 }
 
