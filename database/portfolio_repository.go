@@ -77,7 +77,25 @@ func (db *DB) GetStockBySymbol(ctx context.Context, stockSymbol string) (*types.
 	return nil, nil
 }
 
-func (db *DB) AddStockToPortfolio(ctx context.Context, stockSymbol string) (*types.Stock, error) {
+func (db *DB) AddStockToPortfolio(ctx context.Context, stock types.Stock) (*types.Stock, error) {
+	query := `
+		INSERT INTO stocks(portfolio_id, symbol month, open, high, low, close, volume),
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, portfolio_id, symbol, month, open, high, low, close, volume
+	`
+
+	var stockID string
+	var portfolioID string
+	var symbol string
+	var month string
+	var open string
+	var high string
+	var low string
+	var close string
+	var volume string
+
+	err := db.QueryRowContext(ctx, query, stock.,)
+
 	return nil, nil
 }
 

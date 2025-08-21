@@ -83,12 +83,14 @@ func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	stock, err := utils.GetAlphaVentageStock(&user, stockSymbol)
+	stock, err := utils.GetAlphaVentageStock(user, stockSymbol)
 
 	if err != nil {
 		http.Error(w, "Error while fetching stock", http.StatusInternalServerError)
 		return
 	}
+
+	err := s.db.AddStockToPortfolio(ctx, stock)
 
 }
 

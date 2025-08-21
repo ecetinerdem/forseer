@@ -20,14 +20,14 @@ func GetAlphaVentageStock(user *types.User, stockSymbol string) (*types.Stock, e
 	r, err := http.Get(url)
 
 	if err != nil {
-		return nil, fmt.Errorf("Error getting stock data %w", err)
+		return nil, fmt.Errorf("error getting stock data %w", err)
 	}
 	defer r.Body.Close()
 
 	err = json.NewDecoder(r.Body).Decode(&alphaVentageStockResponse)
 
 	if err != nil {
-		return nil, fmt.Errorf("Error decoding stock data %w", err)
+		return nil, fmt.Errorf("error decoding stock data %w", err)
 	}
 
 	var latestDate string
@@ -38,11 +38,13 @@ func GetAlphaVentageStock(user *types.User, stockSymbol string) (*types.Stock, e
 	}
 
 	returnStock.Symbol = alphaVentageStockResponse.MetaData.Symbol
-	returnStock.Month = string(time.Now().Month())
+	returnStock.Month = time.Now().Month().String()
 	returnStock.Open = alphaVentageStockResponse.TimeSeries[latestDate].Open
 	returnStock.High = alphaVentageStockResponse.TimeSeries[latestDate].Open
 	returnStock.Close = alphaVentageStockResponse.TimeSeries[latestDate].Open
 	returnStock.Volume = alphaVentageStockResponse.TimeSeries[latestDate].Open
 	returnStock.PortfolioID = user.Portfolio.ID
+
+	return &returnStock, nil
 
 }
