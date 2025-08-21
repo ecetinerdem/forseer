@@ -90,7 +90,20 @@ func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err := s.db.AddStockToPortfolio(ctx, stock)
+	addedStock, err := s.db.AddStockToPortfolio(ctx, stock)
+
+	if err != nil {
+		http.Error(w, "Could not add stock to portfolio", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(&addedStock); err != nil {
+		http.Error(w, "Could not encode stock", http.StatusInternalServerError)
+		return
+	}
 
 }
 
