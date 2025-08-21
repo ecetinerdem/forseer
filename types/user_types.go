@@ -19,6 +19,7 @@ type User struct {
 	LastLogin      time.Time        `json:"last_login"`
 	IsAdmin        bool             `json:"is_admin"`
 	IsPaid         bool             `json:"is_paid"`
+	Portfolio      Portfolio        `json:"portfolio"`
 }
 
 type RegisterUser struct {
