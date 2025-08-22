@@ -112,5 +112,26 @@ func (s *Server) HandleDeleteStockByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) HandleGetStockBySymbol(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	symbol := chi.URLParam(r, "symbol")
+
+	if symbol == "" {
+		http.Error(w, "User ID cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	stock, err := s.db.GetStockBySymbol(ctx, symbol)
+
+	if err != nil {
+		http.Error(w, "Stock with given symbol does not exist", http.StatusBadRequest)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(&stock); err != nil {
+		http.Error(w, "Could not encode stock", http.StatusInternalServerError)
+		return
+	}
 
 }

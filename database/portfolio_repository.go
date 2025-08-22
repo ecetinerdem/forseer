@@ -74,7 +74,30 @@ func (db *DB) GetStockByID(ctx context.Context, stockID string) (*types.Stock, e
 }
 
 func (db *DB) GetStockBySymbol(ctx context.Context, stockSymbol string) (*types.Stock, error) {
-	return nil, nil
+	query := `
+		SELECT id, portfolio_id, symbol, month, open, high, low, close, volume
+		FROM stocks
+		WHERE symbol = $1
+	`
+
+	var stock types.Stock
+
+	err := db.QueryRowContext(ctx, query, stockSymbol).Scan(
+		&stock.ID,
+		&stock.PortfolioID,
+		&stock.Symbol,
+		&stock.Month,
+		&stock.High,
+		&stock.Low,
+		stock.Close,
+		&stock.Volume,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("stock with given id does not exist %w", err)
+	}
+
+	return &stock, nil
 }
 
 func (db *DB) AddStockToPortfolio(ctx context.Context, stock *types.Stock) (*types.Stock, error) {
