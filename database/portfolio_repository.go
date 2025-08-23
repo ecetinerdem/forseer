@@ -136,6 +136,19 @@ func (db *DB) AddStockToPortfolio(ctx context.Context, stock *types.Stock) (*typ
 	}, nil
 }
 
-func (db *DB) DeleteStockByID(ctx context.Context, userID string) error {
+func (db *DB) DeleteStockByID(ctx context.Context, stockID string) error {
+
+	query := `
+		DELETE id, portfolio_id, symbol, month, open, high, low, close, volume
+		FROM stocks
+		WHERE id = $1
+	`
+
+	err := db.QueryRowContext(ctx, query, stockID)
+
+	if err != nil {
+		return fmt.Errorf("could not delete from database")
+	}
+
 	return nil
 }
