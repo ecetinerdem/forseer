@@ -23,6 +23,8 @@ func (s *Server) HandleGetPortfolio(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer r.Body.Close()
+
 	portfolio, err := s.db.GetStocks(ctx, user.ID)
 
 	if err != nil {
@@ -53,6 +55,7 @@ func (s *Server) HandleGetStockByID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Stock ID can not be empty", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
 	stock, err := s.db.GetStockByID(ctx, stockId)
 
@@ -82,6 +85,7 @@ func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Reques
 		http.Error(w, "Stock symbol can not be empty", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
 
 	stock, err := utils.GetAlphaVentageStock(user, stockSymbol)
 
@@ -108,6 +112,25 @@ func (s *Server) HandleAddStockToPortfolio(w http.ResponseWriter, r *http.Reques
 }
 
 func (s *Server) HandleDeleteStockByID(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	stockID := chi.URLParam(r, "id")
+
+	if stockID == "" {
+		http.Error(w, "User ıd cannot be empty", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	err := s.db.DeleteStockByID(ctx, stockID)
+
+	if err != nil {
+		http.Error(w, "Could not delete the stock with given id", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 
 }
 
