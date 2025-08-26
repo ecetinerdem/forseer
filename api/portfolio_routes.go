@@ -139,7 +139,7 @@ func (s *Server) HandleGetStockBySymbol(w http.ResponseWriter, r *http.Request) 
 	symbol := chi.URLParam(r, "symbol")
 
 	if symbol == "" {
-		http.Error(w, "User ID cannot be empty", http.StatusBadRequest)
+		http.Error(w, "Stock symbol cannot be empty", http.StatusBadRequest)
 		return
 	}
 
