@@ -3,11 +3,11 @@ package types
 type SubscriptionType string
 
 const (
-	SubscriptionNone    SubscriptionType = "nosubs"
-	SubscriptionMonthly SubscriptionType = "month"
-	SubscriptionYearly  SubscriptionType = "year"
+	NoSubscription SubscriptionType = "nosubs"
+	Monthly        SubscriptionType = "month"
+	Yearly         SubscriptionType = "year"
 )
 
 func (s SubscriptionType) IsValid() bool {
-	return s == SubscriptionMonthly || s == SubscriptionYearly || s == SubscriptionNone
+	return s == Monthly || s == Yearly || s == NoSubscription
 }

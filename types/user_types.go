@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// User represents a system user
 type User struct {
 	ID             string           `json:"id"`
 	Name           string           `json:"name"`
@@ -37,6 +38,21 @@ type LoginUserResponse struct {
 	Token string `json:"token"`
 }
 
+// AddStockRequest represents the request to add a stock
+type AddStockRequest struct {
+	Symbol string `json:"symbol"`
+}
+
+// StockOwnershipError represents an ownership validation error
+type StockOwnershipError struct {
+	UserID  string
+	StockID string
+}
+
+func (e *StockOwnershipError) Error() string {
+	return fmt.Sprintf("user %s does not own stock %s", e.UserID, e.StockID)
+}
+
 func NewUser(params RegisterUser) (*User, error) {
 	hashedPswrd, err := bcrypt.GenerateFromPassword([]byte(params.Password), 12)
 	if err != nil {
@@ -47,13 +63,12 @@ func NewUser(params RegisterUser) (*User, error) {
 		Name:           "", // Can update name later
 		Email:          params.Email,
 		PasswordHashed: string(hashedPswrd),
-		Subscription:   "nosubs",
+		Subscription:   NoSubscription,
 		RegisterDate:   time.Now().Local(),
 		LastLogin:      time.Now().Local(),
 		IsAdmin:        false,
 		IsPaid:         false,
 	}, nil
-
 }
 
 func ValidatePassword(hashPassword string, password string) bool {
@@ -82,7 +97,6 @@ func CreateToken(user User) (string, error) {
 	tokenStr, err := token.SignedString([]byte(secret))
 
 	if err != nil {
-
 		return "", fmt.Errorf("failed to sign token %w", err)
 	}
 
