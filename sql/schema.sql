@@ -87,4 +87,32 @@ $$ language 'plpgsql';
 CREATE TRIGGER update_users_updated_at 
     BEFORE UPDATE ON users 
     FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_portfolios_updated_at 
+    BEFORE UPDATE ON portfolios 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_stocks_updated_at 
+    BEFORE UPDATE ON stocks 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Sample data migration (optional - for testing)
+-- This creates a sample user and portfolio structure
+-- Remove this section in production
+
+/*
+-- Insert a sample user
+INSERT INTO users (email, password_hashed, name) 
+VALUES ('test@example.com', '$2a$12$sample_hash_here', 'Test User')
+ON CONFLICT (email) DO NOTHING;
+
+-- Create a sample portfolio for the user
+INSERT INTO portfolios (user_id, name)
+SELECT id, 'My Test Portfolio' 
+FROM users 
+WHERE email = 'test@example.com'
+ON CONFLICT (user_id, name) DO NOTHING;
+*/
