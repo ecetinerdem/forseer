@@ -16,6 +16,11 @@ func main() {
 		log.Println("No .env file found")
 	}
 
+	openAIAPIKey := os.Getenv("OPENAI_API_KEY") // not yet added
+	if openAIAPIKey == "" {
+		log.Fatal("OPENAI_API_KEY environment variable is required")
+	}
+
 	db, err := database.NewDB()
 
 	if err != nil {
@@ -26,7 +31,7 @@ func main() {
 
 	database.RunMigrations(db)
 
-	server := api.NewServer(db)
+	server := api.NewServer(db, openAIAPIKey)
 	PORT := os.Getenv("PORT")
 	log.Println("Server starting on the designated port")
 	log.Fatal(http.ListenAndServe(":"+PORT, server.Router))

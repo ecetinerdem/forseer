@@ -40,9 +40,9 @@ func GetAlphaVentageStock(user *types.User, stockSymbol string) (*types.Stock, e
 	returnStock.Symbol = alphaVentageStockResponse.MetaData.Symbol
 	returnStock.Month = time.Now().Month().String()
 	returnStock.Open = alphaVentageStockResponse.TimeSeries[latestDate].Open
-	returnStock.High = alphaVentageStockResponse.TimeSeries[latestDate].Open
-	returnStock.Close = alphaVentageStockResponse.TimeSeries[latestDate].Open
-	returnStock.Volume = alphaVentageStockResponse.TimeSeries[latestDate].Open
+	returnStock.High = alphaVentageStockResponse.TimeSeries[latestDate].High
+	returnStock.Close = alphaVentageStockResponse.TimeSeries[latestDate].Close
+	returnStock.Volume = alphaVentageStockResponse.TimeSeries[latestDate].Volume
 	returnStock.PortfolioID = user.Portfolio.ID
 
 	return &returnStock, nil
